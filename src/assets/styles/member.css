@@ -1,0 +1,86 @@
+/* src/assets/styles/member.css */
+
+.member-layout { min-height: 100vh; background: var(--gray-50); }
+
+.member-nav {
+  background: white;
+  box-shadow: var(--shadow);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+.nav-user { display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; color: var(--gray-700); }
+.btn-logout-sm {
+  background: transparent;
+  border: 1px solid var(--gray-300);
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--gray-600);
+}
+.btn-logout-sm:hover { background: var(--danger); color: white; border-color: var(--danger); }
+
+.member-content {
+  max-width: 600px;
+  margin: 2.5rem auto;
+  padding: 0 1.5rem;
+}
+
+.profile-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 2rem;
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 auto 1rem;
+}
+
+.profile-info-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.profile-info-header h2 { font-size: 1.35rem; margin-bottom: 0.5rem; }
+.profile-info-header .badge { margin: 0 0.25rem; }
+
+.borrow-stats { margin-bottom: 1.5rem; }
+.borrow-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  margin-bottom: 0.35rem;
+}
+.borrow-bar { background: var(--gray-200); border-radius: 999px; height: 8px; overflow: hidden; }
+.borrow-bar-fill { background: var(--primary); height: 100%; border-radius: 999px; transition: width 0.3s; }
+
+.profile-details { display: flex; flex-direction: column; gap: 0; }
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.detail-row:last-of-type { border-bottom: none; }
+.detail-label { font-size: 0.85rem; color: var(--gray-500); }
+.detail-value { font-size: 0.875rem; color: var(--gray-800); font-weight: 500; text-align: right; max-width: 65%; }
+
+.btn-edit-profile { margin-top: 1.5rem; width: 100%; }
+
+.profile-form { display: flex; flex-direction: column; }
+.form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 0.5rem; }
