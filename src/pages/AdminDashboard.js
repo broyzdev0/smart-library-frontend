@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminAnggotaAPI, adminAPI } from '../services/api';
+import { adminAnggotaAPI, adminAdminAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 
@@ -9,6 +9,7 @@ import ModalEditAnggota from '../components/admin/ModalEditAnggota';
 import ModalDetailAnggota from '../components/admin/ModalDetailAnggota';
 import ModalTambahAdmin from '../components/admin/ModalTambahAdmin';
 import '../assets/styles/admin.css';
+import Swal from 'sweetalert2'; 
 
 // ─── Komponen: Pagination ───────────────────────────────────────────────────
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
@@ -52,7 +53,6 @@ const TabAnggota = ({ user }) => {
       const res = await adminAnggotaAPI.getStats();
       setStats(res.data.data);
     } catch {
-      // stats tidak kritis, abaikan error
     }
   }, []);
 
@@ -94,17 +94,69 @@ const TabAnggota = ({ user }) => {
     setPage(0);
   };
 
-  const handleToggleStatus = async (anggota) => {
-    const aksi = anggota.isActive ? 'nonaktifkan' : 'aktifkan';
-    if (!window.confirm(`${aksi.charAt(0).toUpperCase() + aksi.slice(1)} akun ${anggota.nama}?`)) return;
-    try {
-      await adminAnggotaAPI.toggleStatus(anggota.userId);
-      toast.success(`Akun ${anggota.nama} berhasil di${aksi}kan`);
-      fetchAnggota(page, search);
-      fetchStats();
-    } catch {
-      toast.error(`Gagal ${aksi}kan anggota`);
+  // Toggle Status Anggota + Confirmation Dialog
+ const handleToggleStatus = async (anggota) => {
+  const aksi = anggota.isActive ? 'nonaktifkan' : 'aktifkan';
+
+  Swal.fire({
+    title: 'Konfirmasi Status Anggota',
+    text: `Apakah Anda yakin ingin ${aksi}kan akun anggota bernama "${anggota.nama}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: anggota.isActive ? '#d33' : '#28a745',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: `Ya, ${aksi}kan!`,
+    cancelButtonText: 'Batal'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      console.log("[FE LOG] Menembak API toggle untuk anggota ID:", anggota.userId);
+      try {
+        await adminAnggotaAPI.toggleStatus(anggota.userId);
+        Swal.fire('Berhasil!', `Akun anggota ${anggota.nama} telah di${aksi}kan.`, 'success');
+        
+        setAnggotaList(prevList => 
+          prevList.map(item => 
+            item.userId === anggota.userId ? { ...item, isActive: !item.isActive } : item
+          )
+        );
+        fetchAnggota(0, search);
+        fetchStats();
+      } catch (err) {
+        console.error("[FE LOG] Gagal toggle status anggota:", err);
+        toast.error(err.response?.data?.message || `Gagal ${aksi}kan anggota`);
+      }
     }
+  });
+};
+
+  // Hapus Anggota Permanen + Confirmation Dialog
+  const handleHapusAnggota = async (anggota) => {
+    Swal.fire({
+      title: 'Hapus Anggota Permanen?',
+      text: `Apakah Anda yakin ingin menghapus secara permanen anggota "${anggota.nama}"? Semua data terkait akun ini akan dilenyapkan.`,
+      icon: 'error',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        console.log("[FE LOG] Menembak API delete untuk anggota ID:", anggota.userId);
+        try {
+          await adminAnggotaAPI.delete(anggota.userId);
+          Swal.fire('Terhapus!', `Data anggota ${anggota.nama} berhasil dihapus permanen.`, 'success');
+          
+          // Hapus instan dari layar
+          setAnggotaList(prevList => prevList.filter(item => item.userId !== anggota.userId));
+          fetchAnggota(0, search);
+          fetchStats();
+        } catch (err) {
+          console.error("[FE LOG] Gagal menghapus anggota:", err);
+          toast.error(err.response?.data?.message || 'Gagal menghapus data anggota');
+        }
+      }
+    });
   };
 
   const formatTanggal = (iso) => {
@@ -114,7 +166,6 @@ const TabAnggota = ({ user }) => {
     });
   };
 
-  // Hitung stats lokal jika backend belum ada
   const totalAktif = stats?.totalAktif ?? anggotaList.filter((a) => a.isActive).length;
   const totalNonaktif = stats?.totalNonaktif ?? anggotaList.filter((a) => !a.isActive).length;
   const totalAnggota = stats?.totalAnggota ?? anggotaList.length;
@@ -156,7 +207,7 @@ const TabAnggota = ({ user }) => {
         </button>
       </div>
 
-      {/* Tabel Anggota — OOP: tampilkanAnggota() */}
+      {/* Tabel Anggota */}
       <div className="table-wrapper">
         {loading ? (
           <div className="loading-state">Memuat data anggota...</div>
@@ -216,6 +267,15 @@ const TabAnggota = ({ user }) => {
                         >
                           {anggota.isActive ? 'Nonaktifkan' : 'Aktifkan'}
                         </button>
+                        {/* SUNTIKAN: Tombol Hapus Anggota */}
+                        <button
+                          className="btn-sm btn-outline"
+                          style={{ borderColor: 'var(--red-500)', color: 'var(--red-500)' }}
+                          onClick={() => handleHapusAnggota(anggota)}
+                          title="Hapus permanen"
+                        >
+                          Hapus
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -266,15 +326,11 @@ const TabAdmin = ({ currentUser }) => {
   const fetchAdmin = useCallback(async (p = 0) => {
     setLoading(true);
     try {
-      const res = await adminAPI.getAll(p);
-      
-      // PERBAIKAN: Antisipasi jika format backend langsung res.data atau res.data.data
+      const res = await adminAdminAPI.getAll(p);
       const pageData = res.data?.data || res.data;
       
       if (pageData) {
-        // Cek apakah data list-nya bernama 'content' (Bawaan Spring Boot Page) atau array langsung
         const listAdmin = pageData.content || (Array.isArray(pageData) ? pageData : []);
-        
         setAdminList(listAdmin);
         setTotalPages(pageData.totalPages || 1);
         setPage(pageData.number || 0);
@@ -290,6 +346,92 @@ const TabAdmin = ({ currentUser }) => {
   useEffect(() => {
     fetchAdmin(0);
   }, [fetchAdmin]);
+
+  // PERBAIKAN: Fungsi Toggle Status Admin Lebih Agresif
+  const handleToggleStatusAdmin = async (admin) => {
+    if (admin.userId === currentUser?.userId) {
+      toast.error('Anda tidak diizinkan menonaktifkan akun sendiri!');
+      return;
+    }
+
+    const aksi = admin.isActive ? 'nonaktifkan' : 'aktifkan';
+
+    // ─── YANG DIUBAH 1: Mengganti window.confirm dengan SweetAlert2 ───
+    Swal.fire({
+      title: 'Konfirmasi Status',
+      text: `Apakah Anda yakin ingin ${aksi}kan hak akses administrator "${admin.nama}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: admin.isActive ? '#d33' : '#28a745',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: `Ya, ${aksi}kan!`,
+      cancelButtonText: 'Batal'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        
+        // ─── YANG DIUBAH 2: Menambahkan Log Pelacak di Console Browser ───
+        console.log("[FE LOG] Menembak API toggle untuk admin ID:", admin.userId);
+        
+        try {
+          const response = await adminAdminAPI.toggleStatus(admin.userId);
+          
+          // Memunculkan data balikan dari Java ke Console (Biar ketahuan isinya apa)
+          console.log("[FE LOG] Respons Mentah dari Java:", response);
+          console.log("[FE LOG] Isi Data Respons:", response.data);
+
+          // Efek visual sukses bawaan SweetAlert2 yang modern
+          Swal.fire('Berhasil!', `Akun admin ${admin.nama} telah di${aksi}kan.`, 'success');
+          
+          // ─── YANG DIUBAH 3: Jalur Paksa Refresh State ───
+          setAdminList(prevList => 
+            prevList.map(item => 
+              item.userId === admin.userId ? { ...item, isActive: !item.isActive } : item
+            )
+          );
+          
+          fetchAdmin(0); 
+        } catch (err) {
+          console.error("[FE LOG] Terjadi Eror Saat Toggle:", err);
+          console.error("[FE LOG] Detail Eror Response:", err.response?.data);
+          toast.error(err.response?.data?.message || `Gagal mengubah status akses admin`);
+        }
+      }
+    });
+  };
+
+  // PERBAIKAN: Fungsi Hapus Admin
+  const handleHapusAdmin = async (admin) => {
+    if (admin.userId === currentUser?.userId) {
+      toast.error('Anda tidak diizinkan menghapus akun Anda sendiri!');
+      return;
+    }
+
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: `Akun admin "${admin.nama}" akan dihapus secara permanen dari sistem!`,
+      icon: 'error',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, Hapus Permanen!',
+      cancelButtonText: 'Batal'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        console.log("[FE LOG] Menembak API delete untuk admin ID:", admin.userId);
+        try {
+          await adminAdminAPI.delete(admin.userId);
+          Swal.fire('Terhapus!', `Akun administrator ${admin.nama} telah dilenyapkan.`, 'success');
+          
+          // Hapus instan dari layar
+          setAdminList(prevList => prevList.filter(item => item.userId !== admin.userId));
+          fetchAdmin(0);
+        } catch (err) {
+          console.error("[FE LOG] Gagal menghapus admin:", err);
+          toast.error(err.response?.data?.message || 'Gagal menghapus akun administrator');
+        }
+      }
+    });
+  };
 
   const formatTanggal = (iso) => {
     if (!iso) return '-';
@@ -328,6 +470,7 @@ const TabAdmin = ({ currentUser }) => {
                   <th>Jabatan</th>
                   <th>Tgl. Dibuat</th>
                   <th>Status</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -349,6 +492,30 @@ const TabAdmin = ({ currentUser }) => {
                       <span className={`badge ${admin.isActive ? 'badge-success' : 'badge-danger'}`}>
                         {admin.isActive ? 'Aktif' : 'Nonaktif'}
                       </span>
+                    </td>
+                    <td>
+                      {/* SUNTIKAN: Tombol Aksi Kolon Manajemen Admin */}
+                      <div className="action-buttons">
+                        <button
+                          className={`btn-sm ${admin.isActive ? 'btn-danger' : 'btn-success'}`}
+                          disabled={admin.userId === currentUser?.userId}
+                          onClick={() => handleToggleStatusAdmin(admin)}
+                          style={admin.userId === currentUser?.userId ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                          title={admin.userId === currentUser?.userId ? 'Tidak bisa menonaktifkan diri sendiri' : (admin.isActive ? 'Nonaktifkan' : 'Aktifkan')}
+                        >
+                          {admin.isActive ? 'Nonaktifkan' : 'Aktifkan'}
+                        </button>
+                        
+                        <button
+                          className="btn-sm btn-outline"
+                          disabled={admin.userId === currentUser?.userId}
+                          onClick={() => handleHapusAdmin(admin)}
+                          style={admin.userId === currentUser?.userId ? { opacity: 0.5, cursor: 'not-allowed', borderColor: '#ccc', color: '#ccc' } : { borderColor: 'var(--red-500)', color: 'var(--red-500)' }}
+                          title={admin.userId === currentUser?.userId ? 'Tidak bisa menghapus diri sendiri' : 'Hapus admin'}
+                        >
+                          Hapus
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

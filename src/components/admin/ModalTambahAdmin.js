@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { adminAPI } from '../../services/api';
+import { adminAdminAPI } from '../../services/api';
 import { toast } from 'react-toastify';
 import '../../assets/styles/modal.css';
 
@@ -22,7 +22,7 @@ const ModalTambahAdmin = ({ onClose, onSuccess }) => {
     setLoading(true);
     try {
       const payload = { ...form, role: 'ADMIN' };
-      await adminAPI.tambahAdmin(payload);
+      await adminAdminAPI.tambahAdmin(payload);
       toast.success(`Admin ${form.nama} berhasil ditambahkan`);
       onSuccess();
     } catch (err) {

@@ -1,6 +1,3 @@
-// src/services/api.js
-// Konfigurasi Axios untuk komunikasi dengan backend Spring Boot
-
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8080/api';
@@ -32,9 +29,7 @@ api.interceptors.response.use(
   }
 );
 
-// ==========================================
 // AUTH API  →  /api/auth
-// ==========================================
 export const authAPI = {
   login: (data) => api.post('/auth/login', data),
   register: (data) => api.post('/auth/register', data),
@@ -42,20 +37,16 @@ export const authAPI = {
   logout: () => api.post('/auth/logout'),
 };
 
-// ==========================================
 // ANGGOTA API — self-service (member sendiri)
 // Endpoint: /api/anggota
-// ==========================================
 export const anggotaAPI = {
   getProfile: (userId) => api.get(`/anggota/${userId}`),
   updateProfile: (userId, data) => api.put(`/anggota/${userId}`, data),
   lihatRiwayat: (userId) => api.get(`/anggota/${userId}/riwayat`),
 };
 
-// ==========================================
 // ADMIN API — Manajemen Anggota
 // Endpoint: /api/anggota  (role ADMIN)
-// ==========================================
 export const adminAnggotaAPI = {
   getAll: (page = 0, size = 10, sortBy = 'nama') =>
     api.get(`/anggota?page=${page}&size=${size}&sortBy=${sortBy}`),
@@ -64,12 +55,9 @@ export const adminAnggotaAPI = {
     api.get(`/anggota/search?keyword=${encodeURIComponent(keyword)}&page=${page}&size=${size}`),
     
   getStats: () => api.get('/anggota/stats'),
-  
   getById: (userId) => api.get(`/anggota/${userId}`),
-  
   getByNoAnggota: (noAnggota) => api.get(`/anggota/no/${noAnggota}`),
   
-  // ─── KUNCI PERBAIKAN: Kembalikan ke JSON murni biasa ───
   tambah: (data) => {
     return api.post('/anggota', {
       nama: data.nama,
@@ -82,19 +70,18 @@ export const adminAnggotaAPI = {
   },
   
   update: (userId, data) => api.put(`/anggota/${userId}`, data),
-  toggleStatus: (userId) => api.put(`/anggota/${userId}/toggle-status`),
   getRiwayat: (userId) => api.get(`/anggota/${userId}/riwayat`),
+  toggleStatus: (userId) => api.put(`/anggota/${userId}/toggle-status`),
+  delete: (userId) => api.delete(`/anggota/${userId}`),
 };
 
-// ==========================================
 // ADMIN API — Manajemen Admin
-// ==========================================
-export const adminAPI = {
+export const adminAdminAPI = {
   getAll: (page = 0, size = 10) =>
     api.get(`/admin?page=${page}&size=${size}`),
+    
   getById: (userId) => api.get(`/admin/${userId}`),
   
-  // PERBAIKAN TOTAL: Kirim menggunakan FormData agar dibaca oleh @ModelAttribute di backend
   tambahAdmin: (data) => {
     const formData = new FormData();
     formData.append('nama', data.nama);
@@ -107,12 +94,14 @@ export const adminAPI = {
 
     return api.post('/admin', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data', // Memberitahu backend bahwa ini Form Data
+        'Content-Type': 'multipart/form-data',
       },
     });
   },
   
   update: (userId, data) => api.put(`/admin/${userId}`, data),
+  toggleStatus: (userId) => api.put(`/admin/${userId}/toggle-status`),
+  delete: (userId) => api.delete(`/admin/${userId}`),
 };
 
 export default api;

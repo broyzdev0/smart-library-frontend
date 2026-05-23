@@ -1,5 +1,3 @@
-// src/components/admin/ModalTambahAnggota.js
-
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import '../../assets/styles/modal.css';
