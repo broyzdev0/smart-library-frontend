@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { adminAnggotaAPI } from '../services/api';
+import { useAuth } from '../../auth';
+import { adminAnggotaAPI } from '../services/memberAPI';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import '../assets/styles/admin.css';
+import '../../../assets/styles/admin.css';
 
 const DashboardAnggota = () => {
   const { user, logout } = useAuth();

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { anggotaAPI } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../auth';
+import { anggotaAPI } from '../services/memberAPI';
 import { toast } from 'react-toastify';
-import '../assets/styles/member.css';
+import '../../../assets/styles/member.css';
 
 const MemberProfile = () => {
   const [profile, setProfile] = useState(null);

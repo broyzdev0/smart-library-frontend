@@ -1,8 +1,8 @@
-// src/context/AuthContext.js
+// src/features/auth/context/AuthContext.js
 // Global state untuk autentikasi pengguna
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../services/api';
+import { authAPI } from '../services/authAPI';
 
 const AuthContext = createContext(null);
 

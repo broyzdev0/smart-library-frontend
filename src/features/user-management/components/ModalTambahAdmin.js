@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { adminAdminAPI } from '../../services/api';
+import { adminAdminAPI } from '../services/adminAPI';
 import { toast } from 'react-toastify';
-import '../../assets/styles/modal.css';
+import '../../../assets/styles/modal.css';
 
 const ModalTambahAdmin = ({ onClose, onSuccess }) => {
   const [form, setForm] = useState({

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import '../../assets/styles/modal.css';
-import { adminAnggotaAPI } from '../../services/api';
+import '../../../assets/styles/modal.css';
+import { adminAnggotaAPI } from '../services/memberAPI';
 
 const ModalTambahAnggota = ({ onClose, onSuccess }) => {
   const [form, setForm] = useState({

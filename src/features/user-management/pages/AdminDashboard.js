@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminAnggotaAPI, adminAdminAPI } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../auth';
+import { AdminBookManagement } from '../../book-management';
+import { adminAdminAPI } from '../services/adminAPI';
+import { adminAnggotaAPI } from '../services/memberAPI';
 import { toast } from 'react-toastify';
 
-import ModalTambahAnggota from '../components/admin/ModalTambahAnggota';
-import ModalEditAnggota from '../components/admin/ModalEditAnggota';
-import ModalDetailAnggota from '../components/admin/ModalDetailAnggota';
-import ModalTambahAdmin from '../components/admin/ModalTambahAdmin';
-import '../assets/styles/admin.css';
+import ModalTambahAnggota from '../components/ModalTambahAnggota';
+import ModalEditAnggota from '../components/ModalEditAnggota';
+import ModalDetailAnggota from '../components/ModalDetailAnggota';
+import ModalTambahAdmin from '../components/ModalTambahAdmin';
+import '../../../assets/styles/admin.css';
 import Swal from 'sweetalert2'; 
 
 // ─── Komponen: Pagination ───────────────────────────────────────────────────
@@ -554,6 +556,7 @@ const AdminDashboard = () => {
   const tabs = [
     { id: 'anggota', label: '👥 Manajemen Anggota' },
     { id: 'admin', label: '🛡️ Manajemen Admin' },
+    { id: 'buku', label: 'Manajemen Buku' },
   ];
 
   return (
@@ -586,18 +589,21 @@ const AdminDashboard = () => {
         <div className="page-header">
           <div>
             <h1>
-              {activeTab === 'anggota' ? 'Manajemen Anggota' : 'Manajemen Admin'}
+              {activeTab === 'anggota' ? 'Manajemen Anggota' : activeTab === 'admin' ? 'Manajemen Admin' : 'Manajemen Buku'}
             </h1>
             <p>
               {activeTab === 'anggota'
                 ? 'Kelola data anggota perpustakaan'
-                : 'Kelola akun administrator sistem'}
+                : activeTab === 'admin'
+                  ? 'Kelola akun administrator sistem'
+                  : 'Kelola katalog buku fisik dan digital'}
             </p>
           </div>
         </div>
 
         {activeTab === 'anggota' && <TabAnggota user={user} />}
         {activeTab === 'admin' && <TabAdmin currentUser={user} />}
+        {activeTab === 'buku' && <AdminBookManagement />}
       </main>
     </div>
   );
