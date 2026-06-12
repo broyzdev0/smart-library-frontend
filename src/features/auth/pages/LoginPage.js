@@ -1,10 +1,10 @@
-// src/pages/LoginPage.js
+// src/features/auth/pages/LoginPage.js
 
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
-import '../assets/styles/auth.css';
+import '../../../assets/styles/auth.css';
 
 const LoginPage = () => {
   const [form, setForm] = useState({ email: '', password: '' });

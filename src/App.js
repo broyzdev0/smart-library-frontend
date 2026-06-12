@@ -3,12 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { AuthProvider } from './context/AuthContext';
-import PrivateRoute from './components/common/PrivateRoute';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import AdminDashboard from './pages/AdminDashboard';
-import DashboardAnggota from './pages/DashboardAnggota';
+import { AuthProvider, LoginPage, PrivateRoute, RegisterPage } from './features/auth';
+import { AdminDashboard, DashboardAnggota } from './features/user-management';
 
 function App() {
   return (

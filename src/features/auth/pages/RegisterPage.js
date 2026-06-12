@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { authAPI } from '../services/api';
+import { authAPI } from '../services/authAPI';
 import { toast } from 'react-toastify';
-import '../assets/styles/auth.css';
+import '../../../assets/styles/auth.css';
 
 const RegisterPage = () => {
   const [form, setForm] = useState({
