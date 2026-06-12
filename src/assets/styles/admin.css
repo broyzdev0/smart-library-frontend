@@ -92,6 +92,14 @@
   font-size: 0.875rem;
   outline: none;
 }
+.search-bar select {
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  outline: none;
+  background: white;
+}
 .search-bar input:focus { border-color: var(--primary); }
 
 /* Table */

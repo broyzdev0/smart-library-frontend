@@ -1,9 +1,13 @@
 import httpClient from '../../../services/httpClient';
 
 export const bookAPI = {
-  getAll: (params = {}) => httpClient.get('/buku', { params }),
-  getById: (bookId) => httpClient.get(`/buku/${bookId}`),
-  create: (data) => httpClient.post('/buku', data),
-  update: (bookId, data) => httpClient.put(`/buku/${bookId}`, data),
-  delete: (bookId) => httpClient.delete(`/buku/${bookId}`),
+  getAll: () => httpClient.get('/books'),
+  getById: (bookId) => httpClient.get(`/books/${bookId}`),
+  create: (data) => httpClient.post('/books', data),
+  update: (bookId, data) => httpClient.put(`/books/${bookId}`, data),
+  delete: (bookId) => httpClient.delete(`/books/${bookId}`),
+  search: (keyword) => httpClient.get('/books/search', { params: { keyword } }),
+  searchByTitle: (keyword) => httpClient.get('/books/search/title', { params: { keyword } }),
+  searchByAuthor: (keyword) => httpClient.get('/books/search/author', { params: { keyword } }),
+  searchByIsbn: (keyword) => httpClient.get('/books/search/isbn', { params: { keyword } }),
 };
