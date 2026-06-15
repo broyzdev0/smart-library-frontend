@@ -1,7 +1,7 @@
 // src/features/auth/pages/LoginPage.js
 
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import '../../../assets/styles/auth.css';
@@ -86,9 +86,7 @@ const LoginPage = () => {
           </button>
         </form>
 
-        <div className="auth-footer">
-          <p>Belum punya akun? <Link to="/register">Daftar sebagai Anggota</Link></p>
-        </div>
+      
       </div>
     </div>
   );

@@ -186,16 +186,16 @@ const DashboardAnggota = () => {
   return (
     <div className="admin-layout">
       <aside className="sidebar" style={{ background: 'linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%)' }}>
-        <div className="sidebar-logo">Smart Library</div>
+        <div className="sidebar-logo">📚 Smart Library</div>
         <nav className="sidebar-nav">
           <div className={`nav-item ${activeSubTab === 'profil' ? 'active' : ''}`} onClick={() => setActiveSubTab('profil')}>
-            Profil
+             👥 Profil
           </div>
           <div className={`nav-item ${activeSubTab === 'katalog' ? 'active' : ''}`} onClick={() => setActiveSubTab('katalog')}>
-            Katalog Buku
+            📘 Katalog Buku
           </div>
           <div className={`nav-item ${activeSubTab === 'peminjaman' ? 'active' : ''}`} onClick={() => setActiveSubTab('peminjaman')}>
-            Peminjaman Saya
+            📖 Peminjaman Saya
           </div>
         </nav>
         <div className="sidebar-footer">

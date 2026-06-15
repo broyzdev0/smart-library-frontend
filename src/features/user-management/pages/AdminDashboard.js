@@ -556,13 +556,13 @@ const AdminDashboard = () => {
   const tabs = [
     { id: 'anggota', label: '👥 Manajemen Anggota' },
     { id: 'admin', label: '🛡️ Manajemen Admin' },
-    { id: 'buku', label: 'Manajemen Buku' },
+    { id: 'buku', label: '📝 Manajemen Buku' },
   ];
 
   return (
     <div className="admin-layout">
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className="sidebar" style={{ background: 'linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%)' }}>
         <div className="sidebar-logo">📚 Smart Library</div>
         <nav className="sidebar-nav">
           {tabs.map((tab) => (
