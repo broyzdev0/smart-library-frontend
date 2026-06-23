@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     if (token && userData) {
-      setUser(JSON.parse(userData)); // Sekarang ini akan berisi objek user murni
+      setUser(JSON.parse(userData)); 
     }
     setLoading(false);
   }, []);
